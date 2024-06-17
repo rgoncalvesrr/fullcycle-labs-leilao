@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/auction/core/entity"
+	bid "github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/bid/core/entity"
 	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/internalerror"
 )
 
@@ -34,11 +35,13 @@ type ICreateAuctionUseCase interface {
 
 type CreateAuctionUseCase struct {
 	auctionRepository entity.IAuctionRepository
+	bidRepository     bid.IBidRepository
 }
 
-func NewCreateAuctionUseCase(auctionRepository entity.IAuctionRepository) ICreateAuctionUseCase {
+func NewCreateAuctionUseCase(auctionRepository entity.IAuctionRepository, bidRepository bid.IBidRepository) ICreateAuctionUseCase {
 	return &CreateAuctionUseCase{
 		auctionRepository: auctionRepository,
+		bidRepository:     bidRepository,
 	}
 }
 
