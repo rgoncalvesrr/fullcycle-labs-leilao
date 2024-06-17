@@ -5,7 +5,7 @@ import (
 
 	"github.com/rgoncalvesrr/fullcycle-labs-leilao/config/logger"
 	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/auction/core/entity"
-	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/error"
+	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/internalerror"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -29,7 +29,7 @@ func NewAuctionRepository(db *mongo.Database) *AuctionRepository {
 	}
 }
 
-func (r *AuctionRepository) Create(ctx context.Context, auction entity.Auction) *error.InternalError {
+func (r *AuctionRepository) Create(ctx context.Context, auction *entity.Auction) *internalerror.Error {
 
 	auctionEntityMongo := &AuctionEntityMongo{
 		Id:          auction.Id,
@@ -46,7 +46,7 @@ func (r *AuctionRepository) Create(ctx context.Context, auction entity.Auction) 
 	if err != nil {
 		msg := "ocorreu um erro tentando inserir um leilão"
 		logger.Error(msg, err)
-		return error.NewInternalServerError(msg)
+		return internalerror.NewInternalServerError(msg)
 	}
 
 	return nil

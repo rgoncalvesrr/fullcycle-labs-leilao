@@ -8,13 +8,13 @@ import (
 
 	"github.com/rgoncalvesrr/fullcycle-labs-leilao/config/logger"
 	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/auction/core/entity"
-	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/error"
+	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/internalerror"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (r *AuctionRepository) FindAuctionById(ctx context.Context, id string) (*entity.Auction, *error.InternalError) {
+func (r *AuctionRepository) FindAuctionById(ctx context.Context, id string) (*entity.Auction, *internalerror.Error) {
 	filter := bson.M{"_id": id}
 	var auctionMongo AuctionEntityMongo
 
@@ -22,12 +22,12 @@ func (r *AuctionRepository) FindAuctionById(ctx context.Context, id string) (*en
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			msg := fmt.Sprintf("leilão \"%s\" não localizado no banco de dados", id)
 			logger.Error(msg, err)
-			return nil, error.NewNotFoundError(msg)
+			return nil, internalerror.NewNotFoundError(msg)
 		}
 
 		msg := "erro tentando localizar leilão"
 		logger.Error(msg, err)
-		return nil, error.NewInternalServerError(msg)
+		return nil, internalerror.NewInternalServerError(msg)
 	}
 
 	return &entity.Auction{
@@ -45,7 +45,7 @@ func (r *AuctionRepository) FindAuctionById(ctx context.Context, id string) (*en
 func (r *AuctionRepository) FindAuctions(
 	ctx context.Context,
 	status entity.AuctionStatus,
-	category, productName string) ([]entity.Auction, *error.InternalError) {
+	category, productName string) ([]entity.Auction, *internalerror.Error) {
 	filter := bson.M{}
 	if status >= entity.Active && status <= entity.Completed {
 		filter["status"] = status
@@ -63,7 +63,7 @@ func (r *AuctionRepository) FindAuctions(
 	if err != nil {
 		msg := "erro tentando localizar leilões"
 		logger.Error(msg, err)
-		return nil, error.NewInternalServerError(msg)
+		return nil, internalerror.NewInternalServerError(msg)
 	}
 	defer cursor.Close(ctx)
 
@@ -72,7 +72,7 @@ func (r *AuctionRepository) FindAuctions(
 	if err := cursor.All(ctx, auctions); err != nil {
 		msg := "erro tentando localizar leilões"
 		logger.Error(msg, err)
-		return nil, error.NewInternalServerError(msg)
+		return nil, internalerror.NewInternalServerError(msg)
 	}
 
 	result := []entity.Auction{}

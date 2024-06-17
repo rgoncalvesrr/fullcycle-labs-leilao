@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/error"
+	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/internalerror"
 	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/user/core/entity"
 )
 
@@ -13,7 +13,7 @@ type UserOutputDTO struct {
 }
 
 type IFindUserUseCase interface {
-	Execute(ctx context.Context, userId string) (*UserOutputDTO, *error.InternalError)
+	Execute(ctx context.Context, userId string) (*UserOutputDTO, *internalerror.Error)
 }
 
 type FindUserUseCase struct {
@@ -26,7 +26,7 @@ func NewFindUserUseCase(userRepository entity.IUserReposiroty) IFindUserUseCase 
 	}
 }
 
-func (u *FindUserUseCase) Execute(ctx context.Context, userId string) (*UserOutputDTO, *error.InternalError) {
+func (u *FindUserUseCase) Execute(ctx context.Context, userId string) (*UserOutputDTO, *internalerror.Error) {
 	user, err := u.UserRepository.FindUserById(ctx, userId)
 
 	if err != nil {

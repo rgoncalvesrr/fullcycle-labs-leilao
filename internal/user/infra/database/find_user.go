@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/rgoncalvesrr/fullcycle-labs-leilao/config/logger"
-	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/error"
+	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/internalerror"
 	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/user/core/entity"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -27,7 +27,7 @@ func NewUserRepository(database *mongo.Database) *UserRepository {
 	}
 }
 
-func (r *UserRepository) FindUserById(ctx context.Context, userId string) (*entity.User, *error.InternalError) {
+func (r *UserRepository) FindUserById(ctx context.Context, userId string) (*entity.User, *internalerror.Error) {
 
 	filter := bson.M{"_id": userId}
 
@@ -39,12 +39,12 @@ func (r *UserRepository) FindUserById(ctx context.Context, userId string) (*enti
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			msg := fmt.Sprintf("usuário %s não localizado.", userId)
 			logger.Error(msg, err)
-			return nil, error.NewNotFoundError(msg)
+			return nil, internalerror.NewNotFoundError(msg)
 		}
 
 		msg := "erro tentando localizar usuário"
 		logger.Error(msg, err)
-		return nil, error.NewInternalServerError(msg)
+		return nil, internalerror.NewInternalServerError(msg)
 	}
 
 	return &entity.User{

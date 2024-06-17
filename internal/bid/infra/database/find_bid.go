@@ -8,13 +8,13 @@ import (
 
 	"github.com/rgoncalvesrr/fullcycle-labs-leilao/config/logger"
 	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/bid/core/entity"
-	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/error"
+	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/internalerror"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (r *BidRepository) FindByByAuctionId(ctx context.Context, auctionId string) ([]entity.Bid, *error.InternalError) {
+func (r *BidRepository) FindByByAuctionId(ctx context.Context, auctionId string) ([]entity.Bid, *internalerror.Error) {
 
 	filter := bson.M{"auction_id": auctionId}
 
@@ -24,16 +24,16 @@ func (r *BidRepository) FindByByAuctionId(ctx context.Context, auctionId string)
 		logger.Error(msg, err)
 
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, error.NewNotFoundError(msg)
+			return nil, internalerror.NewNotFoundError(msg)
 		}
 
-		return nil, error.NewInternalServerError(msg)
+		return nil, internalerror.NewInternalServerError(msg)
 	}
 
 	var bidsMongo []BidEntityMongo
 
 	if err := cursor.All(ctx, &bidsMongo); err != nil {
-		return nil, error.NewInternalServerError(err.Error())
+		return nil, internalerror.NewInternalServerError(err.Error())
 	}
 
 	bids := []entity.Bid{}
@@ -51,7 +51,7 @@ func (r *BidRepository) FindByByAuctionId(ctx context.Context, auctionId string)
 	return bids, nil
 }
 
-func (r *BidRepository) FindWinningBidByAuctionId(ctx context.Context, auctionId string) (*entity.Bid, *error.InternalError) {
+func (r *BidRepository) FindWinningBidByAuctionId(ctx context.Context, auctionId string) (*entity.Bid, *internalerror.Error) {
 	filter := bson.M{"auction_id": auctionId}
 	opts := options.FindOne().SetSort(bson.D{{"ammount", -1}})
 
@@ -61,7 +61,7 @@ func (r *BidRepository) FindWinningBidByAuctionId(ctx context.Context, auctionId
 	if err != nil {
 		msg := fmt.Sprint("Erro ao recuperar maior lance do leilão %s", auctionId)
 		logger.Error(msg, err)
-		return nil, error.NewInternalServerError(msg)
+		return nil, internalerror.NewInternalServerError(msg)
 	}
 
 	return &entity.Bid{

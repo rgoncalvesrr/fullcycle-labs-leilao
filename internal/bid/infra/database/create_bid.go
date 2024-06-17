@@ -9,7 +9,7 @@ import (
 	auction_entity "github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/auction/core/entity"
 	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/auction/infra/database"
 	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/bid/core/entity"
-	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/error"
+	"github.com/rgoncalvesrr/fullcycle-labs-leilao/internal/internalerror"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -26,7 +26,7 @@ type BidRepository struct {
 	AuctionRepository *database.AuctionRepository
 }
 
-func (r *BidRepository) Create(ctx context.Context, bids []entity.Bid) *error.InternalError {
+func (r *BidRepository) Create(ctx context.Context, bids []entity.Bid) *internalerror.Error {
 	var wg sync.WaitGroup
 
 	for _, bid := range bids {
