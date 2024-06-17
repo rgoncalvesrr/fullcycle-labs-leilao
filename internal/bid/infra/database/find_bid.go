@@ -20,7 +20,7 @@ func (r *BidRepository) FindByByAuctionId(ctx context.Context, auctionId string)
 
 	cursor, err := r.Collection.Find(ctx, filter)
 	if err != nil {
-		msg := fmt.Sprint("Erro ao recuperar lances do leilão %s", auctionId)
+		msg := fmt.Sprintf("Erro ao recuperar lances do leilão %s", auctionId)
 		logger.Error(msg, err)
 
 		if errors.Is(err, mongo.ErrNoDocuments) {
@@ -59,7 +59,7 @@ func (r *BidRepository) FindWinningBidByAuctionId(ctx context.Context, auctionId
 
 	err := r.Collection.FindOne(ctx, filter, opts).Decode(&bidMongo)
 	if err != nil {
-		msg := fmt.Sprint("Erro ao recuperar maior lance do leilão %s", auctionId)
+		msg := fmt.Sprintf("Erro ao recuperar maior lance do leilão %s", auctionId)
 		logger.Error(msg, err)
 		return nil, internalerror.NewInternalServerError(msg)
 	}
